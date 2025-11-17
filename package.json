@@ -6,7 +6,19 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
-  }
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iland12/maharani_feedback.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Iland12/maharani_feedback/issues"
+  },
+  "homepage": "https://github.com/Iland12/maharani_feedback#readme",
+  "description": ""
 }
