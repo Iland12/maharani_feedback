@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Love for Maharani</title>
+  </head>
+  <body>
+    <h1>I Love Maharani ❤️</h1>
+
+    <button onclick="sendFeedback()">Send Feedback</button>
+
+    <div id="nameField" style="display: none">
+      <input id="nameInput" placeholder="Enter your name" />
+      <button onclick="saveName()">Submit Name</button>
+    </div>
+
+    <script>
+      function sendFeedback() {
+        fetch("/save-feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: "Someone clicked the button",
+          }),
+        }).then(() => {
+          alert("Feedback sent!");
+          document.getElementById("nameField").style.display = "block";
+        });
+      }
+
+      function saveName() {
+        const name = document.getElementById("nameInput").value;
+
+        fetch("/save-feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name }),
+        }).then(() => {
+          alert("Name saved!");
+        });
+      }
+    </script>
+  </body>
+</html>
