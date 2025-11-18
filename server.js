@@ -1,10 +1,20 @@
 const express = require("express");
 const fs = require("fs");
+const path = require("path");
+const cors = require("cors");
+
 const app = express();
 
+app.use(cors());
 app.use(express.json());
-app.use(express.static("."));
 
+// Serve HTML files from /public
+app.use(express.static(path.join(__dirname, "public")));
+
+// Path to data file
+const dataFile = path.join(__dirname, "data", "feedback.json");
+
+// Save feedback
 app.post("/save-feedback", (req, res) => {
   const feedback = req.body.feedback;
 
@@ -13,14 +23,15 @@ app.post("/save-feedback", (req, res) => {
     time: new Date().toLocaleString(),
   };
 
-  let data = JSON.parse(fs.readFileSync("feedback.json"));
+  let data = JSON.parse(fs.readFileSync(dataFile));
   data.push(entry);
 
-  fs.writeFileSync("feedback.json", JSON.stringify(data, null, 2));
+  fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
 
   res.send("Feedback saved");
 });
 
+// Save name
 app.post("/save-name", (req, res) => {
   const name = req.body.name;
 
@@ -29,12 +40,14 @@ app.post("/save-name", (req, res) => {
     time: new Date().toLocaleString(),
   };
 
-  let data = JSON.parse(fs.readFileSync("feedback.json"));
+  let data = JSON.parse(fs.readFileSync(dataFile));
   data.push(entry);
 
-  fs.writeFileSync("feedback.json", JSON.stringify(data, null, 2));
+  fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
 
   res.send("Name saved");
 });
 
-app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+// Start server
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log("Server running on port " + port));
