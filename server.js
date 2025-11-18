@@ -1,53 +1,69 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const cors = require("cors");
-
 const app = express();
 
-app.use(cors());
 app.use(express.json());
 
-// Serve HTML files from /public
-app.use(express.static(path.join(__dirname, "public")));
+// Correct path for Render
+const feedbackPath = path.join(__dirname, "data", "feedback.json");
 
-// Path to data file
-const dataFile = path.join(__dirname, "data", "feedback.json");
+// Ensure feedback.json exists
+if (!fs.existsSync(feedbackPath)) {
+  fs.writeFileSync(feedbackPath, "[]");
+}
 
-// Save feedback
-app.post("/save-feedback", (req, res) => {
-  const feedback = req.body.feedback;
+app.post("/feedback", (req, res) => {
+  const feedback = req.body;
 
-  const entry = {
-    feedback: feedback,
-    time: new Date().toLocaleString(),
-  };
+  fs.readFile(feedbackPath, "utf8", (err, data) => {
+    if (err) return res.status(500).json({ error: "Read error" });
 
-  let data = JSON.parse(fs.readFileSync(dataFile));
-  data.push(entry);
+    let arr = JSON.parse(data);
+    arr.push(feedback);
 
-  fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+    fs.writeFile(feedbackPath, JSON.stringify(arr, null, 2), (err) => {
+      if (err) return res.status(500).json({ error: "Write error" });
 
-  res.send("Feedback saved");
+      res.json({ status: "saved" });
+    });
+  });
 });
 
-// Save name
-app.post("/save-name", (req, res) => {
-  const name = req.body.name;
+app.listen(3000, () => console.log("Server running on 3000"));
 
-  const entry = {
-    name: name,
-    time: new Date().toLocaleString(),
-  };
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const app = express();
 
-  let data = JSON.parse(fs.readFileSync(dataFile));
-  data.push(entry);
+app.use(express.json());
 
-  fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+// Serve index.html
+app.use(express.static(__dirname));
 
-  res.send("Name saved");
+// Feedback file path
+const feedbackPath = path.join(__dirname, "data", "feedback.json");
+
+if (!fs.existsSync(feedbackPath)) {
+  fs.writeFileSync(feedbackPath, "[]");
+}
+
+app.post("/feedback", (req, res) => {
+  const feedback = req.body;
+
+  fs.readFile(feedbackPath, "utf8", (err, data) => {
+    if (err) return res.status(500).json({ error: "Read error" });
+
+    let arr = JSON.parse(data);
+    arr.push(feedback);
+
+    fs.writeFile(feedbackPath, JSON.stringify(arr, null, 2), (err) => {
+      if (err) return res.status(500).json({ error: "Write error" });
+
+      res.json({ status: "saved" });
+    });
+  });
 });
 
-// Start server
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log("Server running on port " + port));
+app.listen(3000, () => console.log("Server running on 3000"));
